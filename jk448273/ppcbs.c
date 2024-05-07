@@ -174,8 +174,12 @@ int main(int argc, char *argv[]) {
                 written_length = writen(client_fd, &rcvd, sizeof rcvd);
                 if(written_length<0){
                     fprintf(stderr,"ERROR: Problem while writing to the client\n");
+                    continue;
                 }
-                write(STDOUT_FILENO,msg,sizeof(msg));
+                ssize_t written_len = write(STDOUT_FILENO,msg,msg_len);
+                if(written_len<0){
+                    fprintf(stderr,"ERROR: write\n");
+                }
             }
             
             free(msg);
@@ -397,7 +401,12 @@ int main(int argc, char *argv[]) {
                 msg_i+=len;
                 ++next_nr;
                 if(msg_i>=msg_len){
-                    write(STDOUT_FILENO,msg,sizeof(msg));
+                    ssize_t written_len = write(STDOUT_FILENO,msg,msg_len);
+                    if(written_len<0){
+                        fprintf(stderr,"ERROR: write\n");
+                        reset_params(&cur_session,&cur_prot,&next_nr,&msg_i,&has_client,&last_send,&ret_count,socket_fd,nolimit);
+                        continue;
+                    }
                     RCVD rcvd;
                     rcvd.pack_id=7;
                     rcvd.session_id=cur_session;
