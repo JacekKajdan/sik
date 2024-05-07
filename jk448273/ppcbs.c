@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
                 if(written_length<0){
                     fprintf(stderr,"ERROR: Problem while writing to the client\n");
                 }
-                printf("%s",msg);
+                write(STDOUT_FILENO,msg,sizeof(msg));
             }
             
             free(msg);
@@ -397,7 +397,7 @@ int main(int argc, char *argv[]) {
                 msg_i+=len;
                 ++next_nr;
                 if(msg_i>=msg_len){
-                    printf("%s\n",msg);
+                    write(STDOUT_FILENO,msg,sizeof(msg));
                     RCVD rcvd;
                     rcvd.pack_id=7;
                     rcvd.session_id=cur_session;

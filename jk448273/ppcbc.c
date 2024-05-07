@@ -27,14 +27,13 @@ int main(int argc, char *argv[]) {
     //Wczytywanie standardowego wejscia
     char *input = (char *)malloc(1024 * sizeof(char));
     int index = 0;
-    char c;
+    int c;
     while ((c = getchar()) != EOF) {
         input[index++] = c;
         if (index % 1024 == 0) {
             input = (char *)realloc(input, (index + 1024) * sizeof(char));
         }
     }
-    input[index] = '\0';
 
     
     //TCP
@@ -65,7 +64,7 @@ int main(int argc, char *argv[]) {
         conn.prot_id=1;
         conn.pack_id=1;
         conn.session_id=rand_uint64();
-        conn.len=htobe64(index+1);
+        conn.len=htobe64(index);
 
         write_length = writen(socket_fd, &conn, sizeof (conn));
         if(write_length<0){
@@ -98,10 +97,10 @@ int main(int argc, char *argv[]) {
         
 
         
-        while(index_sent<index+1){
+        while(index_sent<index){
             u_int32_t len_to_send = MAX_DATA_SIZE;
-            if(index+1-index_sent<MAX_DATA_SIZE){
-                len_to_send = index+1-index_sent;
+            if(index-index_sent<MAX_DATA_SIZE){
+                len_to_send = index-index_sent;
             }
             data.pack_nr=htobe64(pack_nr);
 
@@ -174,7 +173,7 @@ int main(int argc, char *argv[]) {
         conn.prot_id=2;
         conn.pack_id=1;
         conn.session_id=rand_uint64();
-        conn.len=htobe64(index+1);
+        conn.len=htobe64(index);
         ssize_t sent_length = sendto(socket_fd, &conn, sizeof(conn), send_flags,
                                     (struct sockaddr *) &server_address, address_length);
         if(sent_length<0){
@@ -219,10 +218,10 @@ int main(int argc, char *argv[]) {
             data.session_id=conn.session_id;
 
             
-            while(index_sent<index+1){
+            while(index_sent<index){
                 u_int32_t len_to_send = MAX_DATA_SIZE;
-                if(index+1-index_sent<MAX_DATA_SIZE){
-                    len_to_send = index+1-index_sent;
+                if(index-index_sent<MAX_DATA_SIZE){
+                    len_to_send = index-index_sent;
                 }
                 data.pack_nr=htobe64(pack_nr);
                 ++pack_nr;
@@ -306,7 +305,7 @@ int main(int argc, char *argv[]) {
         conn.prot_id=3;
         conn.pack_id=1;
         conn.session_id=rand_uint64();
-        conn.len=htobe64(index+1);
+        conn.len=htobe64(index);
 
         static char buffer[sizeof(DATA)];
         struct sockaddr_in receive_address;
@@ -362,10 +361,10 @@ int main(int argc, char *argv[]) {
             data.session_id=conn.session_id;
 
             rep_count=0;
-            while(index_sent<index+1){
+            while(index_sent<index){
                 u_int32_t len_to_send = MAX_DATA_SIZE;
-                if(index+1-index_sent<MAX_DATA_SIZE){
-                    len_to_send = index+1-index_sent;
+                if(index-index_sent<MAX_DATA_SIZE){
+                    len_to_send = index-index_sent;
                 }
                 data.pack_nr=htobe64(pack_nr);
                 ++pack_nr;
